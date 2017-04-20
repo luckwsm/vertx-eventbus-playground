@@ -1,0 +1,22 @@
+group 'io.vertxplayground'
+version '3.4.1'
+
+apply plugin: 'java'
+apply plugin: 'groovy'
+apply plugin: 'maven'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven {
+        url "https://oss.sonatype.org/content/repositories/snapshots"
+    }
+    jcenter()
+}
+
+dependencies {
+    compile "io.vertxplayground:vertx-playground-boot:$version"
+
+    testCompile "org.codehaus.groovy:groovy-all:2.4.10"
+}
+
