@@ -29,27 +29,29 @@ public class AsyncResultToFuture extends AbstractVerticle {
     }
 
     public Future fut(String address) {
-        Future<JsonObject> future = Future.future();
-        vertx.eventBus().<JsonObject>send(address, new JsonObject().put("Key", 456), (ar) -> {
-            JsonObject json = ar.result().body();
-            vertx.executeBlocking(future1 -> {
-                try {
-                    Thread.sleep(5000);
-                } catch(InterruptedException e) {
-                    e.printStackTrace();
-                }
-                future1.complete();
-            }, asyncResult -> {
-                System.out.println(1);
-                future.complete(json);
-            });
-        });
+        Future<AsyncResult<Message<JsonObject>>> future = Future.future();
+        vertx.eventBus().<JsonObject>send(
+                address,
+                new JsonObject().put("Key", 456),
+                (ar) -> {
+                    vertx.executeBlocking(future1 -> {
+                        try {
+                            Thread.sleep(5000);
+                        } catch(InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        future1.complete();
+                    }, asyncResult -> {
+                        System.out.println(System.currentTimeMillis());
+                        future.complete(ar);
+                    });
+                });
         return future;
     }
 
     public Future fut2(String address) {
         Future<Message<Object>> future = Future.future();
-        System.out.println(2);
+        System.out.println(System.currentTimeMillis());
         vertx.eventBus().send(address, "hi", future::handle);
         return future;
     }
